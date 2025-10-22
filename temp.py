@@ -5,6 +5,7 @@ import hashlib
 import random
 import uuid
 import asyncio
+import os
 from telegram import Update, Bot
 from telegram.ext import Application, CommandHandler, ContextTypes
 
@@ -18,15 +19,10 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
 # --- CONFIGURATION ---
-# IMPORTANT: Replace with your actual bot token and RapidAPI key.
-# The user provided these values:
-# Bot Token: 8031723513:AAGM8euqDu9dUVihc3eTmCFCctnMIOi-RkE
-# RapidAPI Key: 87071f5058msh58c5d676b796932p18d2f2jsnc18747d0890c
-# RapidAPI Host: privatix-temp-mail-v1.p.rapidapi.com
-
-BOT_TOKEN = "8031723513:AAGM8euqDu9dUVihc3eTmCFCctnMIOi-RkE"
-RAPIDAPI_KEY = "87071f5058msh58c5d676b796932p18d2f2jsnc18747d0890c"
-RAPIDAPI_HOST = "privatix-temp-mail-v1.p.rapidapi.com"
+# Use environment variables with fallback values for local development
+BOT_TOKEN = os.environ.get("BOT_TOKEN", "8031723513:AAGM8euqDu9dUVihc3eTmCFCctnMIOi-RkE")
+RAPIDAPI_KEY = os.environ.get("RAPIDAPI_KEY", "87071f5058msh58c5d676b796932p18d2f2jsnc18747d0890c")
+RAPIDAPI_HOST = os.environ.get("RAPIDAPI_HOST", "privatix-temp-mail-v1.p.rapidapi.com")
 
 # Dictionary to store the temporary email for each user.
 # The key is the user's chat ID, and the value is their email address.
@@ -246,6 +242,13 @@ async def delete_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
 def main() -> None:
     """Start the bot."""
+    # Validate that required environment variables are set
+    if not BOT_TOKEN or BOT_TOKEN == "8031723513:AAGM8euqDu9dUVihc3eTmCFCctnMIOi-RkE":
+        logger.warning("Using default BOT_TOKEN. For production, set the BOT_TOKEN environment variable.")
+    
+    if not RAPIDAPI_KEY or RAPIDAPI_KEY == "87071f5058msh58c5d676b796932p18d2f2jsnc18747d0890c":
+        logger.warning("Using default RAPIDAPI_KEY. For production, set the RAPIDAPI_KEY environment variable.")
+    
     # Create the Application and pass it your bot's token.
     application = Application.builder().token(BOT_TOKEN).build()
 
